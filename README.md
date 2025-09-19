@@ -1,28 +1,68 @@
-# VisualProg
-Модель движения: Случайное блуждание (Random Walk)
-В данной работе реализована модель случайного блуждания (Random Walk), которая описывает движение объекта путем последовательных случайных шагов в пространстве.
+![Build](https://github.com/android/platform-samples/actions/workflows/build.yml/badge.svg)
 
-Принцип работы модели
-Объект (человек) начинает движение из начальной точки с координатами (0, 0). На каждом шаге объект случайным образом выбирает направление и смещается на величину, зависящую от текущей скорости. В двумерной плоскости это реализуется как изменение координат x и y случайными величинами с равномерным распределением на отрезке [−v,v], где v — текущая скорость.
+# Android Platform Samples
 
-Таким образом траектория движения формируется как серия случайных перемещений, что можно интерпретировать как стохастический процесс.
+This repository contains a collection of samples that demonstrate the use of different Android OS platform APIs. The samples are organized into folders by topic, and each folder contains a README file that provides more information about the samples in that folder.
 
-Математическое описание
-Обозначим шаги по осям как случайные величины:
+> **Note:** These samples are intended to showcase specific functionality in isolation, and they may use
+> simplified code. They are not intended to be used as production-ready code.
+> For best practices follow our documentation and check
+> [Now In Android](https://github.com/android/nowinandroid)
 
-Δxi∼U(−v,v), Δyi∼U(−v,v), i — номер шага.
+Browse the samples inside each topic samples folder:
 
-Положение после n-го шага определяется суммированием шагов:
+- [Accessibility](https://github.com/android/platform-samples/tree/main/samples/accessibility)
+- [Camera](https://github.com/android/platform-samples/tree/main/samples/camera)
+- [Connectivity](https://github.com/android/platform-samples/tree/main/samples/connectivity)
+- [Graphics](https://github.com/android/platform-samples/tree/main/samples/graphics)
+- [Location](https://github.com/android/platform-samples/tree/main/samples/location)
+- [Privacy](https://github.com/android/platform-samples/tree/main/samples/privacy)
+- [Storage](https://github.com/android/platform-samples/tree/main/samples/storage)
+- [User-interface](https://github.com/android/platform-samples/tree/main/samples/user-interface)
+- More to come...
 
-xn=∑i=1nΔxi, yn=∑i=1nΔyi.
+We are constantly adding new samples to this repository. You can find a list of all the available samples [here](https://github.com/android/platform-samples/tree/main/samples).
 
-Ожидаемое значение смещения за много шагов равно нулю, а дисперсия растет пропорционально количеству шагов, что соответствует характерным свойствам случайного блуждания.
+## How to run
 
-Формулы
-Сумма шагов:
+1. Clone the repository
+2. Open the whole project in Android Studio.
+3. Sync & Run `app` configuration
 
-Sn=∑i=1nZi, где Zi  — случайные величины, принимающие значения ±1 с одинаковой вероятностью.
+The app will open with the samples list screen that allows you to navigate throughout the different
+categories and available samples.
 
-Математическое ожидание: E(Sn)=0,
+> **Note:** the `app` module is required to bring together all the samples but it's not relevant
+> for their functionality, you can simply ignore it. The wiring is done under the hood and an
+> implementation detail not needed to understand any sample functionality.
 
-Дисперсия: Var(Sn)=n.
+## Reporting Issues
+
+You can report an [issue with a sample](https://github.com/android/platform-samples/issues) using
+this repository. When doing so, make sure to specify which sample you are referring to.
+
+## Contributions
+
+Please contribute! We will gladly review any pull requests.
+Make sure to read the [Contributing](CONTRIBUTING.md) page first though.
+
+> Note: make sure to run `./gradlew --init-script gradle/spotless-init.gradle.kts spotlessApply` before 
+> submitting PRs.
+
+## License
+
+```
+Copyright 2023 The Android Open Source Project
+ 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
