@@ -1,17 +1,13 @@
 import kotlin.random.Random
 
-// Класс Human с свойствами ФИО, возраст, текущая скорость
 open class Human(
     var fullName: String,
     var age: Int,
     var currentSpeed: Double
-) : Runnable { // Реализуем Runnable для работы в потоке
-
-    // Координаты для моделирования движения в 2D (x, y)
+) : Runnable {
     var x: Double = 0.0
     var y: Double = 0.0
 
-    // Метод move реализует случайное блуждание (Random Walk)
     open fun move() {
         val dx = Random.nextDouble(-currentSpeed, currentSpeed)
         val dy = Random.nextDouble(-currentSpeed, currentSpeed)
@@ -20,7 +16,6 @@ open class Human(
         println("$fullName переместился на координаты (%.2f, %.2f)".format(x, y))
     }
 
-    // Метод run для потока
     override fun run() {
         repeat(5) {
             move()
@@ -29,7 +24,7 @@ open class Human(
     }
 }
 
-// Подкласс Driver, движется только по прямой (ось X)
+// Класс-наследник Driver, движется по прямой (ось X)
 class Driver(
     fullName: String,
     age: Int,
@@ -37,23 +32,22 @@ class Driver(
 ) : Human(fullName, age, currentSpeed) {
 
     override fun move() {
-        // Движение только по X
         x += currentSpeed
         println("Водитель $fullName переместился на координату X = %.2f".format(x))
     }
 }
 
-// Главная функция для запуска симуляции
 fun main() {
-    val human = Human("Обычный человек", 30, 1.5)
+    // Создаём несколько Human и одного Driver
+    val humans = listOf(
+        Human("Человек 1", 25, 1.2),
+        Human("Человек 2", 20, 1.5),
+        Human("Человек 3", 28, 1.7)
+    )
     val driver = Driver("Водитель", 40, 2.0)
 
-    val threadHuman = Thread(human)
-    val threadDriver = Thread(driver)
-
-    threadHuman.start()
-    threadDriver.start()
-
-    threadHuman.join()
-    threadDriver.join()
+    // Запускаем параллельное движение через потоки
+    val threads = humans.map { Thread(it) } + Thread(driver)
+    threads.forEach { it.start() }
+    threads.forEach { it.join() }
 }
