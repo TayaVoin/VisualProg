@@ -1,18 +1,14 @@
 import kotlin.random.Random
 
-// Класс Human с свойствами ФИО, возраст, текущая скорость
-class Human(
+open class Human(
     var fullName: String,
     var age: Int,
     var currentSpeed: Double
-) {
-    // Координаты для моделирования движения в 2D (x, y)
+) : Runnable {
     var x: Double = 0.0
     var y: Double = 0.0
 
-    // Метод move реализует случайное блуждание (Random Walk)
-    fun move() {
-        // Случайный шаг по оси X и Y: скорость в произвольном направлении
+    open fun move() {
         val dx = Random.nextDouble(-currentSpeed, currentSpeed)
         val dy = Random.nextDouble(-currentSpeed, currentSpeed)
         x += dx
@@ -20,23 +16,38 @@ class Human(
         println("$fullName переместился на координаты (%.2f, %.2f)".format(x, y))
     }
 
-    // Геттеры и сеттеры автоматически создаются в Kotlin для var свойств
+    override fun run() {
+        repeat(5) {
+            move()
+            Thread.sleep(1000)
+        }
+    }
 }
 
-// Главная функция для запуска симуляции
-fun main() {
-    val numberOfHumans = 3 // Например, количество зависит от номера в группе
-    val simulationTimeSeconds = 5 // Продолжительность симуляции (секунды)
-    val humans = Array(numberOfHumans) { index ->
-        Human("Человек №${index + 1}", 20 + index, currentSpeed = 1.0 + index.toDouble())
-    }
+// Класс-наследник Driver, движется по прямой (ось X)
+class Driver(
+    fullName: String,
+    age: Int,
+    currentSpeed: Double
+) : Human(fullName, age, currentSpeed) {
 
-    // Цикл симуляции
-    for (t in 1..simulationTimeSeconds) {
-        println("Время: $t секунда")
-        for (human in humans) {
-            human.move()
-        }
-        Thread.sleep(1000) // Задержка 1 секунда между шагами симуляции
+    override fun move() {
+        x += currentSpeed
+        println("Водитель $fullName переместился на координату X = %.2f".format(x))
     }
+}
+
+fun main() {
+    // Создаём несколько Human и одного Driver
+    val humans = listOf(
+        Human("Человек 1", 25, 1.2),
+        Human("Человек 2", 20, 1.5),
+        Human("Человек 3", 28, 1.7)
+    )
+    val driver = Driver("Водитель", 40, 2.0)
+
+    // Запускаем параллельное движение через потоки
+    val threads = humans.map { Thread(it) } + Thread(driver)
+    threads.forEach { it.start() }
+    threads.forEach { it.join() }
 }
