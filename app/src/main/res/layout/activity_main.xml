@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/custom_background"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="40dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/GoToCalc"
+            style="@style/CustomMaterialButton"
+            android:layout_width="match_parent"
+            android:layout_height="74dp"
+            android:text="Calculator"
+            android:layout_margin="10dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/GoToPlayer"
+            style="@style/CustomMaterialButton"
+            android:layout_width="match_parent"
+            android:layout_height="74dp"
+            android:text="Media player"
+            android:layout_margin="10dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/GoToGeo"
+            style="@style/CustomMaterialButton"
+            android:layout_width="match_parent"
+            android:layout_height="74dp"
+            android:text="Geo control"
+            android:layout_margin="10dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/GoToMobileData"
+            style="@style/CustomMaterialButton"
+            android:layout_width="match_parent"
+            android:layout_height="74dp"
+            android:text="Mobile Network Data"
+            android:layout_margin="10dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

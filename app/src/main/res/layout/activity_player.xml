@@ -1,0 +1,185 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#383838"
+    android:padding="24dp">
+
+    <!-- Кнопка-гамбургер вверху справа -->
+    <ImageButton
+        android:id="@+id/btnMenu"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_menu"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:scaleType="fitCenter"
+        android:tint="#E3D3AE"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="8dp"/>
+
+    <!-- Название трека -->
+    <TextView
+        android:id="@+id/trackTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Название трека"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#E3D3AE"
+        android:letterSpacing="0.11"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="8dp"
+        android:layout_alignParentTop="true" />
+
+    <!-- Круговой seekbar с винилом -->
+    <FrameLayout
+        android:id="@+id/vinyl_frame"
+        android:layout_width="340dp"
+        android:layout_height="340dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/trackTitle"
+        android:layout_marginTop="36dp">
+
+        <!-- Виниловая пластинка -->
+
+        <!-- Кастомный круговой прогрессбар -->
+        <ImageView
+            android:id="@+id/vinylImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/vinyl" />
+
+        <com.devadvance.circularseekbar.CircularSeekBar
+            android:id="@+id/circleSeekBar"
+            android:layout_width="300dp"
+            android:layout_height="300dp"/>
+
+        <!-- Верхнее (общее) время -->
+        <TextView
+            android:id="@+id/trackTimeTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3:30"
+            android:textSize="22sp"
+            android:textColor="#FFF"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="0dp"
+            android:background="@android:color/transparent"/>
+
+        <!-- Прогресс (время текущего момента, снизу визуального круга) -->
+        <TextView
+            android:id="@+id/trackTimeCurrent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1:46"
+            android:textSize="22sp"
+            android:textColor="#FFF"
+            android:layout_gravity="bottom|end"
+            android:background="@android:color/transparent"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="14dp"/>
+    </FrameLayout>
+
+    <!-- Панель управления (перемотка, пауза, плей и т.д.) -->
+    <LinearLayout
+        android:id="@+id/panelControls"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_below="@id/vinyl_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp">
+
+        <ImageButton
+            android:id="@+id/btnPrev"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/ic_prev"
+            android:background="@null"
+            android:tint="#FFF" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/btnRewind"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_rewind"
+                android:background="@null"
+                android:tint="#FFF" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnPlayPause"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:src="@drawable/ic_play"
+            android:background="@null"
+            android:tint="#E3D3AE"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/btnForward"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_forward"
+                android:background="@null"
+                android:tint="#FFF" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnNext"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/ic_next"
+            android:background="@null"
+            android:tint="#FFF" />
+    </LinearLayout>
+
+    <!-- Регулятор громкости -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="32dp">
+
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_volume"
+            android:tint="#FFF"
+            android:layout_marginRight="8dp"/>
+
+        <SeekBar
+            android:id="@+id/volumeBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="100"/>
+
+        <TextView
+            android:id="@+id/volumePercent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="100 %"
+            android:textColor="#FFF"
+            android:textSize="18sp"
+            android:layout_marginLeft="8dp"/>
+    </LinearLayout>
+</RelativeLayout>
