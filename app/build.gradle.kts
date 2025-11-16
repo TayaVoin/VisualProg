@@ -39,8 +39,8 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("com.google.android.material:material:1.11.0")
-    implementation("com.github.devadvance:CircularSeekBar:1.4")
-    //implementation("com.github.devadawn:circularseekbar:1.4")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

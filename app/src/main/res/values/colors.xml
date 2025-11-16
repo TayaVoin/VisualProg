@@ -5,4 +5,7 @@
     <color name="custom_background">#411E03</color>
     <color name="custom_button">#846851</color>
     <color name="custom_button_text">#FFFFFF</color>
+    <color name="tracks_bg">#B4855F</color>
+    <color name="time_text">#D7CDC1</color>
+
 </resources>

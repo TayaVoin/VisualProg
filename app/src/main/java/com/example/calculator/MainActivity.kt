@@ -7,42 +7,31 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 
-class ZaglushkaButton(private val button: Button) {
-    init {
-        button.setOnClickListener {
-            val context = button.context
-            val message = "Функционал ${button.text} временно недоступен :("
-            val duration = Toast.LENGTH_SHORT
-            Toast.makeText(context, message, duration).show()
-        }
-    }
-}
-
 class MainActivity : AppCompatActivity() {
-    private lateinit var GoToCalcBTN: Button
-    private lateinit var GoToPlayerBTN: Button
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        GoToCalcBTN = findViewById(R.id.GoToCalc)
-        GoToCalcBTN.setOnClickListener {
-            val calcIntent = Intent(this, CalculatorActivity::class.java)
-            startActivity(calcIntent)
+        val goToCalcBtn = findViewById<Button>(R.id.GoToCalc)
+        goToCalcBtn.setOnClickListener {
+            startActivity(Intent(this, CalculatorActivity::class.java))
         }
 
-        GoToPlayerBTN = findViewById(R.id.GoToPlayer)
-        GoToPlayerBTN.setOnClickListener {
-            val playerIntent = Intent(this, PlayerActivity::class.java)
-            startActivity(playerIntent)
+        val goToPlayerBtn = findViewById<Button>(R.id.GoToPlayer)
+        goToPlayerBtn.setOnClickListener {
+            startActivity(Intent(this, PlayerActivity::class.java))
         }
 
-        listOf(
-            R.id.GoToGeo, R.id.GoToMobileData
-        ).forEach { id ->
-            ZaglushkaButton(findViewById(id))
+        val goToGeoBtn = findViewById<Button>(R.id.GoToGeo)
+        goToGeoBtn.setOnClickListener {
+            startActivity(Intent(this, LocationActivity::class.java))
+        }
+
+        val goToMobileDataBtn = findViewById<Button>(R.id.GoToMobileData)
+        goToMobileDataBtn.setOnClickListener {
+            val message = "Функционал Mobile Network Data временно недоступен :("
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
     }
 }
