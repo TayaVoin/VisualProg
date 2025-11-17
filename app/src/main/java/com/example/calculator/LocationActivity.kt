@@ -64,13 +64,13 @@ class LocationActivity : AppCompatActivity() {
                 tvLatitude.text = getString(R.string.latitude_placeholder, location.latitude)
                 tvLongitude.text = getString(R.string.longitude_placeholder, location.longitude)
                 tvAltitude.text = getString(R.string.altitude_placeholder, location.altitude)
-                tvTime.text = getString(R.string.current_time_placeholder, getCurrentTime())
+                tvTime.text = getString(R.string.current_time_placeholder, location.time.toString())
 
                 val entry = LocationEntry(
                     location.latitude,
                     location.longitude,
                     location.altitude,
-                    getCurrentTime()
+                    location.time.toString()
                 )
                 saveLocation(entry)
             } else {
