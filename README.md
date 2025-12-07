@@ -6,19 +6,19 @@
 - UDP сервер слушает порт **8081**
 
 ## Компиляция
-Компиляция серверного кода:
+1. Компиляция серверного кода:
 cd server
 clang server.c -o server -pthread
-Компиляция C-клиентов:
+2. Компиляция C-клиентов:
 cd ../client
 clang client_tcp.c -o client_tcp
 clang client_udp.c -o client_udp
 
 ## Запуск
-Запустите сервер:
+1. Запустите сервер:
 cd server
 ./server
-В другом терминале выполните клиентов по необходимости:
+2. В другом терминале выполните клиентов по необходимости:
 cd client
 Python TCP клиент
 python3 client_tcp.py
