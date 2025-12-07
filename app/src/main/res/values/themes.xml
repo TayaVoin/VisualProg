@@ -1,8 +1,0 @@
-<resources>
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Calculator" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Можно добавить свои цвета, если нужно -->
-    </style>
-
-    <style name="Theme.Calculator" parent="Base.Theme.Calculator" />
-</resources>
