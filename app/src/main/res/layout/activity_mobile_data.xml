@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="JSON sender idle"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btnStartSending"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start sending JSON" />
+
+    <Button
+        android:id="@+id/btnStopSending"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stop" />
+
+</LinearLayout>

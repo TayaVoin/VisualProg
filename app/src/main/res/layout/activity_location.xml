@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/custom_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/location_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Location Data"
+        android:textSize="26sp"
+        android:textColor="#846851"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+        android:id="@+id/tv_latitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Latitude: "
+        android:textSize="20sp"
+        android:textColor="#411E03"
+        android:background="@drawable/player_btn_play"
+        android:padding="8dp"
+        android:layout_marginBottom="10dp"/>
+
+    <TextView
+        android:id="@+id/tv_longitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Longitude: "
+        android:textSize="20sp"
+        android:textColor="#411E03"
+        android:background="@drawable/player_btn_play"
+        android:padding="8dp"
+        android:layout_marginBottom="10dp"/>
+
+    <TextView
+        android:id="@+id/tv_altitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Altitude: "
+        android:textSize="20sp"
+        android:textColor="#411E03"
+        android:background="@drawable/player_btn_play"
+        android:padding="8dp"
+        android:layout_marginBottom="10dp"/>
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Current Time: "
+        android:textSize="20sp"
+        android:textColor="#411E03"
+        android:background="@drawable/player_btn_play"
+        android:padding="8dp"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btn_get_location"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:text="Get Location"
+        android:background="@drawable/player_btn_prev"
+        android:textColor="#411E03"
+        android:textSize="18sp"/>
+</LinearLayout>

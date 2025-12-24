@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Calculator</string>
+    <string name="current_time_start">0:00</string>
+    <string name="duration_time_default">1:03</string>
+    <string name="btn_prev">&#x23EE;</string>          <!-- ⏮ -->
+    <string name="btn_rewind">-10s</string>
+    <string name="btn_play">&#x25B6;</string>         <!-- ▶ -->
+    <string name="btn_forward">+10s</string>
+    <string name="btn_next">&#x23ED;</string><!-- ⏭ -->
+
+    <string name="latitude_placeholder">Latitude: %1$.5f</string>
+    <string name="longitude_placeholder">Longitude: %1$.5f</string>
+    <string name="altitude_placeholder">Altitude: %1$.2f</string>
+    <string name="current_time_placeholder">Current Time: %1$s</string>
+    <string name="location_na">N/A</string>
+    <string name="location_error">Error</string>
+
+</resources>
