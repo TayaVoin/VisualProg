@@ -1,13 +1,13 @@
-#Dear ImGui проект
+# Dear ImGui проект
 Проект для изучения библиотеки Dear ImGui.
 
-##Что внутри
+## Что внутри
 - Подключение Dear ImGui и Implot через git submodules
 - Сборка через CMake
 - Интеграция с SDL2 и OpenGL3
 - Базовое окно с кнопкой и счетчиком
 
-##Структура
+## Структура
 `
 ├── CMakeLists.txt
 ├── src/
@@ -17,7 +17,7 @@
 │   └── implot/
 └── README.md
 `
-##Стек технологий
+## Стек технологий
 - C++17
 - Dear ImGui (ветка docking) — библиотека для создания GUI.
 - Implot — дополнение к Dear ImGui для визуализации графиков.
@@ -26,7 +26,7 @@
 - CMake — инструмент для автоматизации сборки.
 - Git Submodules — для управления зависимостями.
 
-##Сборка
+## Сборка
 ```
 # Установка зависимостей (Ubuntu/Debian)
 sudo apt install libsdl2-dev libgl1-mesa-dev libglew-dev
