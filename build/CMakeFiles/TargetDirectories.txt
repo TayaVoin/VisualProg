@@ -1,0 +1,5 @@
+/Users/taya/Documents/GitHub/visual/visual/build/CMakeFiles/imgui.dir
+/Users/taya/Documents/GitHub/visual/visual/build/CMakeFiles/implot.dir
+/Users/taya/Documents/GitHub/visual/visual/build/CMakeFiles/visual.dir
+/Users/taya/Documents/GitHub/visual/visual/build/CMakeFiles/edit_cache.dir
+/Users/taya/Documents/GitHub/visual/visual/build/CMakeFiles/rebuild_cache.dir

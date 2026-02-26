@@ -1,0 +1,1 @@
+/usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/visual.dir/src/main.cpp.o -o visual  libimgui.a libimplot.a /opt/homebrew/lib/libSDL2.dylib /opt/homebrew/lib/libGLEW.dylib -framework OpenGL libimgui.a
