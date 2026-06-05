@@ -8,66 +8,111 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginTop="40dp">
+        android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/GoToCalc"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="74dp"
-            android:text="Calculator"
-            android:layout_margin="10dp"
-            android:background="@drawable/button_rounded"
-            android:textColor="#FFFFFF"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <Button
-            android:id="@+id/GoToPlayer"
-            android:layout_width="match_parent"
-            android:layout_height="74dp"
-            android:text="Media player"
-            android:layout_margin="10dp"
-            android:background="@drawable/button_rounded"
-            android:textColor="#FFFFFF"/>
+            <!-- Калькулятор -->
+            <Button
+                android:id="@+id/GoToCalc"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="📱 Calculator"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/button_rounded"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp" />
 
-        <Button
-            android:id="@+id/GoToGeo"
-            android:layout_width="match_parent"
-            android:layout_height="74dp"
-            android:text="Geo control"
-            android:layout_margin="10dp"
-            android:background="@drawable/button_rounded"
-            android:textColor="#FFFFFF"/>
+            <!-- Медиа плеер -->
+            <Button
+                android:id="@+id/GoToPlayer"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="🎵 Media Player"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/button_rounded"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp" />
 
-        <Button
-            android:id="@+id/GoToMobileData"
-            android:layout_width="match_parent"
-            android:layout_height="74dp"
-            android:text="Mobile Network Data"
-            android:layout_margin="10dp"
-            android:background="@drawable/button_rounded"
-            android:textColor="#FFFFFF"/>
+            <!-- Geo Control (отображение локации) -->
+            <Button
+                android:id="@+id/GoToGeo"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="📍 Geo Control"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/button_rounded"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp" />
 
-        <Button
-            android:id="@+id/GoToSockets"
-            android:layout_width="match_parent"
-            android:layout_height="74dp"
-            android:text="ZMQ / Sockets"
-            android:layout_margin="10dp"
-            android:background="@drawable/button_rounded"
-            android:textColor="#FFFFFF"/>
-        <Button
-            android:id="@+id/GoToMobileJson"
-            android:layout_width="match_parent"
-            android:layout_height="74dp"
-            android:text="Mobile JSON"
-            android:layout_margin="10dp"
-            android:background="@drawable/button_rounded"
-            android:textColor="#FFFFFF"/>
+            <!-- ZMQ / Sockets (демо отправки) -->
+            <Button
+                android:id="@+id/GoToSockets"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="🔌 ZMQ / Sockets"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/button_rounded"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp" />
 
+            <!-- Mobile Network Data (настройка и отправка данных о сети и местоположении) -->
+            <Button
+                android:id="@+id/GoToMobileData"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="📶 Mobile Network Data"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/button_rounded"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp" />
 
-    </LinearLayout>
+            <!-- Управление фоновым сервисом -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
+                <Button
+                    android:id="@+id/btnStartService"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="▶ Start Service"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/button_rounded"
+                    android:textColor="#00FF00"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/btnStopService"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="⏹ Stop Service"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/button_rounded"
+                    android:textColor="#FF4444"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Статус сервиса -->
+            <TextView
+                android:id="@+id/tvServiceStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Сервис: остановлен"
+                android:textSize="14sp"
+                android:textColor="#888888"
+                android:gravity="center"
+                android:paddingTop="16dp" />
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

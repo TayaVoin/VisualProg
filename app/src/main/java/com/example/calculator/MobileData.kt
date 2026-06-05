@@ -45,10 +45,23 @@ data class CellInfoNrDto(
     val ssSinr: Int?
 )
 
-/** Общая структура, которую будем отправлять на сервер */
+data class AppTraffic(
+    val packageName: String,
+    val appName: String,
+    val rxBytes: Long,
+    val txBytes: Long
+)
+
+data class TrafficInfo(
+    val totalRxBytes: Long,
+    val totalTxBytes: Long,
+    val topApps: List<AppTraffic>
+)
+
 data class MeasurementDto(
     val location: LocationDto,
-    val lte: CellInfoLteDto?,
-    val gsm: CellInfoGsmDto?,
-    val nr: CellInfoNrDto?
+    val lteCells: List<CellInfoLteDto>,
+    val gsmCells: List<CellInfoGsmDto>,
+    val nrCells: List<CellInfoNrDto>,
+    val traffic: TrafficInfo
 )

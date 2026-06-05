@@ -5,7 +5,9 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.zeromq.SocketType
 import org.zeromq.ZContext
@@ -13,106 +15,65 @@ import org.zeromq.ZMQ
 
 class SocketsActivity : AppCompatActivity() {
 
-    private val logTag = "ZMQ_TAG"
-
-    private lateinit var tvSockets: TextView
-    private lateinit var btnStartInApp: Button
-    private lateinit var btnSendToPC: Button
-    private lateinit var handler: Handler
+    private lateinit var tvLog: TextView
+    private lateinit var etServerIp: EditText
+    private lateinit var etServerPort: EditText
+    private lateinit var btnSend: Button
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sockets)
 
-        tvSockets = findViewById(R.id.tvSockets)
-        btnStartInApp = findViewById(R.id.btnStartInApp)
-        btnSendToPC = findViewById(R.id.btnSendToPC)
-        handler = Handler(Looper.getMainLooper())
+        tvLog = findViewById(R.id.tvSockets)
+        etServerIp = findViewById(R.id.etServerIp)
+        etServerPort = findViewById(R.id.etServerPort)
+        btnSend = findViewById(R.id.btnSendToPC)
 
-        // Демонстрация обмена внутри приложения (эмуляция ZMQ REQ/REP)
-        btnStartInApp.setOnClickListener {
-            tvSockets.text = "Starting in-app ZMQ demo..."
-            startInAppCommunication()
-        }
+        // Загружаем сохранённые настройки (из SettingsManager)
+        val settings = SettingsManager(this)
+        etServerIp.setText(settings.getServerIp())
+        etServerPort.setText(settings.getServerPort().toString())
 
-        // Реальный клиент ZMQ → Python‑сервер на ПК
-        btnSendToPC.setOnClickListener {
-            startClientToPc()
+        btnSend.setOnClickListener {
+            sendToServer()
         }
     }
 
-    // ---------------- 1. Android ↔ Android (демо без реального сокета) ----------------
-
-    private fun startInAppCommunication() {
-        // «Сервер» и «клиент» как две последовательные задачи в отдельных потоках
-        Thread {
-            startServerInAppFake()
-        }.start()
+    private fun sendToServer() {
+        val ip = etServerIp.text.toString().trim()
+        val port = etServerPort.text.toString().toIntOrNull()
+        if (ip.isEmpty() || port == null) {
+            Toast.makeText(this, "Введите IP и порт", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         Thread {
-            Thread.sleep(500)
-            startClientInAppFake()
-        }.start()
-    }
-
-    private fun startServerInAppFake() {
-        val request = "Hello from Android in-app client!"
-        for (counter in 1..5) {
-            Log.d(logTag, "[SERVER_FAKE] Received: $request")
-
-            handler.post {
-                tvSockets.text = "In-app server received: $request ($counter)"
-            }
-
-            Thread.sleep(400)
-
-            val response = "Hello from Android ZMQ Server!"
-            Log.d(logTag, "[SERVER_FAKE] Sent reply: $response")
-        }
-    }
-
-    private fun startClientInAppFake() {
-        val response = "Hello from Android ZMQ Server!"
-        for (i in 1..5) {
-            Log.d(logTag, "[CLIENT_FAKE] Sent: Hello from Android in-app client!")
-
-            handler.post {
-                tvSockets.text = "In-app client got: $response (message $i)"
-            }
-
-            Thread.sleep(400)
-        }
-    }
-
-    private fun startClientToPc() {
-        Thread {
-            val context = ZContext()
-            val socket = context.createSocket(SocketType.REQ)
-
-            val serverIp = "192.168.0.105"
-            val serverPort = 6000
-            socket.connect("tcp://$serverIp:$serverPort")
-
-            val msg = "Hello from Android!"
-            socket.send(msg.toByteArray(ZMQ.CHARSET), 0)
-            Log.d(logTag, "[CLIENT→PC] Sent: $msg")
-
             try {
+                val context = ZContext()
+                val socket = context.createSocket(SocketType.REQ)
+                socket.receiveTimeOut = 5000
+                val address = "tcp://$ip:$port"
+                socket.connect(address)
+
+                val msg = "Hello from Android! (test)"
+                socket.send(msg.toByteArray(ZMQ.CHARSET), 0)
+                Log.d("SocketsActivity", "Sent: $msg")
+
                 val reply = socket.recv(0)
                 val replyStr = String(reply, ZMQ.CHARSET)
-                Log.d(logTag, "[CLIENT→PC] Received: $replyStr")
+                Log.d("SocketsActivity", "Received: $replyStr")
 
                 handler.post {
-                    tvSockets.text = "Reply from PC: $replyStr"
+                    tvLog.text = "Отправлено: $msg\nОтвет сервера: $replyStr"
                 }
-            } catch (e: Exception) {
-                Log.e(logTag, "[CLIENT→PC] Error: ${e.message}")
-                handler.post {
-                    tvSockets.text = "Error talking to PC server: ${e.message}"
-                }
-            } finally {
                 socket.close()
                 context.close()
+            } catch (e: Exception) {
+                Log.e("SocketsActivity", "Error: ${e.message}")
+                handler.post {
+                    tvLog.text = "Ошибка: ${e.message}"
+                }
             }
         }.start()
     }

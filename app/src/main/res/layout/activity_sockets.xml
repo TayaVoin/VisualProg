@@ -1,29 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/custom_background">
 
     <TextView
-        android:id="@+id/tvSockets"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="ZMQ log"
-        android:textSize="18sp" />
-
-    <Button
-        android:id="@+id/btnStartInApp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start in-app ZMQ (Android↔Android)" />
+        android:text="ZMQ тестовый клиент"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:paddingBottom="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сервер"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:paddingBottom="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IP:"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:layout_gravity="center_vertical"
+            android:paddingEnd="8dp" />
+
+        <EditText
+            android:id="@+id/etServerIp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="192.168.1.100"
+            android:inputType="text"
+            android:background="@drawable/player_btn_play"
+            android:padding="8dp"
+            android:textColor="#411E03" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Порт:"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+
+        <EditText
+            android:id="@+id/etServerPort"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:hint="50123"
+            android:inputType="number"
+            android:background="@drawable/player_btn_play"
+            android:padding="8dp"
+            android:textColor="#411E03" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnSendToPC"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Send to PC server" />
+        android:layout_height="56dp"
+        android:text="Отправить тестовое сообщение"
+        android:background="@drawable/player_btn_play"
+        android:textColor="#411E03"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Лог:"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:paddingBottom="4dp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#F0F0F0"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/tvSockets"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Готов к отправке"
+            android:textSize="14sp"
+            android:fontFamily="monospace" />
+    </ScrollView>
 </LinearLayout>
