@@ -22,6 +22,10 @@ struct Tile {
     bool loaded = false;
 };
 
+struct Color {
+    uint8_t r, g, b;
+};
+
 class MapManager {
 public:
     MapManager();
@@ -34,7 +38,7 @@ public:
     void renderMap(int winW, int winH, double centerLat, double centerLon, int zoom,
                    const std::vector<MapPoint>& currentPoints,
                    const std::vector<MapPoint>& aggregatedPoints,
-                   bool showHeatmap, float heatmapRadiusPixels, float heatmapRadiusMeters,
+                   bool showHeatmap, float heatmapRadiusMeters,
                    int criterion, int earfcnFilter);
 
     void clearCache();
@@ -42,7 +46,14 @@ public:
     void requestHeatmapUpdate(double centerLat, double centerLon, int zoom, 
                               int winW, int winH, float radiusMeters, int criterion,
                               const std::vector<MapPoint>& allPoints);
-    bool isHeatmapReady() const { return m_heatmapReady; }
+
+    void stopHeatmapGeneration() { m_stopHeatmapRequested = true; }
+
+    void getColorForRsrp(float rsrp, uint8_t& r, uint8_t& g, uint8_t& b);
+    void getColorForRsrq(float rsrq, uint8_t& r, uint8_t& g, uint8_t& b);
+    void getColorForRssi(float rssi, uint8_t& r, uint8_t& g, uint8_t& b);
+    void getColorForAltitude(float alt, uint8_t& r, uint8_t& g, uint8_t& b);
+    void getColorForValueDynamic(float value, float minVal, float maxVal, uint8_t& r, uint8_t& g, uint8_t& b);
 
 private:
     std::string getTilePath(int z, int x, int y);
@@ -57,17 +68,11 @@ private:
     double tileXToLon(double tx, int z);
     double tileYToLat(double ty, int z);
 
-    double metersToPixels(double meters, double centerLat, int zoom, int winH);
-
     // Тепловая карта (синхронная)
-    void generateHeatmapTexture(const std::vector<MapPoint>& points,
-                                double centerLat, double centerLon, int zoom,
-                                int winW, int winH,
-                                float radiusPixels, float radiusMeters,
-                                int criterion);
-    void drawCircle(std::vector<uint8_t>& pixels, int cx, int cy, int r,
-                    uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 200);
-    void getColorForValue(float value, uint8_t& r, uint8_t& g, uint8_t& b);
+    void valueToGradientColor(float value, float minVal, float maxVal, 
+                               uint8_t& r, uint8_t& g, uint8_t& b);
+    // Получение диапазона для выбранного критерия
+    void getRangeForCriterion(int criterion, float& minVal, float& maxVal);
 
     std::atomic<bool> m_workerRunning{true};
     std::thread m_workerThread;
@@ -78,7 +83,6 @@ private:
     std::map<std::string, Tile> m_tileCache;
 
     GLuint m_heatmapTexture = 0;
-    int m_heatmapTexW = 0, m_heatmapTexH = 0;
 
     double haversineDistance(double lat1, double lon1, double lat2, double lon2) const;
 
@@ -105,6 +109,19 @@ private:
                                           double centerLat, double centerLon, int zoom,
                                           int winW, int winH,
                                           float radiusMeters, int criterion);
+
+    // Предопределённые цвета для RSRP (по методике из чужого кода)
+static const Color COLOR_EXCELLENT;
+static const Color COLOR_GOOD;
+static const Color COLOR_FAIR;
+static const Color COLOR_POOR;
+static const Color COLOR_NOSIGNAL; 
+    
+    std::atomic<bool> m_stopHeatmapRequested{false};
+
+    float m_cachedMinVal = 0.0f;
+    float m_cachedMaxVal = 0.0f;
+    int m_cachedCriterion = -1;   // -1 означает, что кэш недействителен
 };
 
 #endif

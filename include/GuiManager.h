@@ -20,9 +20,6 @@ public:
     int selectedEarfcn = 0;   // 0 – все
     float idwRadius = 40.0f;
     float idwPower = 2.0f;
-    bool heatmapDirty = true;
-    void requestHeatmapUpdate();
-    bool isHeatmapUpdateRequested() const { return m_heatmapRequested; }
     void setAggregatedPoints(const std::vector<AggregatedPoint>& points);
 
 private:
@@ -34,8 +31,6 @@ private:
     void renderStatisticsWindow();
     void renderMapControlsWindow();
     void renderMapWindow();
-    bool m_heatmapRequested = false;
-    void generateHeatmap();
     std::vector<MapPoint> m_cachedAggregatedPoints;
     bool m_aggregatedLoaded = false;
 };

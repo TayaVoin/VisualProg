@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 #include "GuiManager.h"
 #include "Config.h"
+#include "ServerCore.h"
 #include "imgui.h"
 #include "implot.h"
 #include <cmath>
@@ -38,7 +39,7 @@ void GuiManager::renderCurrentDataWindow() {
         ImGui::Text("Accuracy: %.1f m", m.location.accuracy);
         ImGui::Separator();
         if (!m.lteCells.empty()) {
-            auto& lte = m.lteCells[0];
+            auto& lte = m.registeredLteCell;
             ImGui::Text("LTE PCI: %d  RSRP: %d dBm", lte.pci, lte.rsrp);
             ImGui::Text("RSRQ: %d dB  RSSNR: %d dB", lte.rsrq, lte.rssnr);
         }
@@ -50,14 +51,74 @@ void GuiManager::renderSignalPlotsWindow() {
     ImGui::SetNextWindowPos(ImVec2(50,560), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(400,300), ImGuiCond_FirstUseEver);
     if (ImGui::Begin("Signal Plots")) {
-        const auto& rsrpVals = m_server.getCachedRsrpHistory();
-        if (rsrpVals.size() > 1) {
-            if (ImPlot::BeginPlot("RSRP History", ImVec2(-1,200))) {
-                ImPlot::PlotLine("RSRP", rsrpVals.data(), rsrpVals.size());
-                ImPlot::EndPlot();
+        static int signalType = 0;
+        const char* signalTypeNames[] = { "RSRP", "RSRQ" };
+        ImGui::Combo("Signal Type", &signalType, signalTypeNames, IM_ARRAYSIZE(signalTypeNames));
+        ImGui::Separator();
+
+        static int selectedPci = -1;
+        auto pciList = m_server.getAvailablePciList();
+        if (ImGui::BeginCombo("PCI", selectedPci == -1 ? "All (history)" : std::to_string(selectedPci).c_str())) {
+            if (ImGui::Selectable("All (history)", selectedPci == -1)) selectedPci = -1;
+            for (int pci : pciList) {
+                if (ImGui::Selectable(std::to_string(pci).c_str(), selectedPci == pci)) {
+                    selectedPci = pci;
+                }
+            }
+            ImGui::EndCombo();
+        }
+
+        if (selectedPci == -1) {
+            const auto& rsrpVals = m_server.getCachedRsrpHistory();
+            const auto& rsrqVals = m_server.getCachedRsrqHistory();
+            if (signalType == 0) {
+                if (rsrpVals.size() > 1) {
+                    if (ImPlot::BeginPlot("RSRP History", ImVec2(-1,200))) {
+                        ImPlot::PlotLine("RSRP (all)", rsrpVals.data(), rsrpVals.size());
+                        ImPlot::EndPlot();
+                    }
+                } else {
+                    ImGui::Text("Not enough RSRP data");
+                }
+            } else {
+                if (rsrqVals.size() > 1) {
+                    if (ImPlot::BeginPlot("RSRQ History", ImVec2(-1,200))) {
+                        ImPlot::PlotLine("RSRQ (all)", rsrqVals.data(), rsrqVals.size());
+                        ImPlot::EndPlot();
+                    }
+                } else {
+                    ImGui::Text("Not enough RSRQ data");
+                }
             }
         } else {
-            ImGui::Text("Not enough data");
+            const auto& historyByPci = m_server.getHistoryByPci();
+            auto it = historyByPci.find(selectedPci);
+            if (it != historyByPci.end()) {
+                const auto& hist = it->second;
+                if (signalType == 0) {
+                    if (hist.rsrpValues.size() > 1) {
+                        if (ImPlot::BeginPlot("RSRP History", ImVec2(-1,200))) {
+                            ImPlot::PlotLine(("RSRP (PCI " + std::to_string(selectedPci) + ")").c_str(),
+                                             hist.rsrpValues.data(), hist.rsrpValues.size());
+                            ImPlot::EndPlot();
+                        }
+                    } else {
+                        ImGui::Text("Not enough RSRP data for PCI %d", selectedPci);
+                    }
+                } else {
+                    if (hist.rsrqValues.size() > 1) {
+                        if (ImPlot::BeginPlot("RSRQ History", ImVec2(-1,200))) {
+                            ImPlot::PlotLine(("RSRQ (PCI " + std::to_string(selectedPci) + ")").c_str(),
+                                             hist.rsrqValues.data(), hist.rsrqValues.size());
+                            ImPlot::EndPlot();
+                        }
+                    } else {
+                        ImGui::Text("Not enough RSRQ data for PCI %d", selectedPci);
+                    }
+                }
+            } else {
+                ImGui::Text("No data for PCI %d", selectedPci);
+            }
         }
         ImGui::End();
     }
@@ -115,6 +176,7 @@ void GuiManager::renderMapWindow() {
                     double latPerPixel = 180.0 / (1 << mapZoom) / winSize.y;
                     mapCenterLon = dragStartLon - delta.x * lonPerPixel;
                     mapCenterLat = dragStartLat + delta.y * latPerPixel;
+                    m_mapManager.stopHeatmapGeneration();
                 }
             } else {
                 isDragging = false;
@@ -136,6 +198,7 @@ void GuiManager::renderMapWindow() {
                     double lonClick = lonMin + mouseRelX * (lonMax - lonMin);
                     double latClick = latMax - mouseRelY * (latMax - latMin);
                     mapZoom = newZoom;
+                    m_mapManager.stopHeatmapGeneration();   // прервать текущую генерацию
                     lonMin = mapCenterLon - 180.0 / (1 << mapZoom);
                     lonMax = mapCenterLon + 180.0 / (1 << mapZoom);
                     latMin = mapCenterLat - 90.0 / (1 << mapZoom);
@@ -153,17 +216,18 @@ void GuiManager::renderMapWindow() {
             // Собираем текущие точки
             std::vector<MapPoint> currentPoints;
             auto m = m_server.getLastMeasurement();
+            m_mapManager.stopHeatmapGeneration();
             if (!m.lteCells.empty()) {
                 MapPoint p;
                 p.lat = m.location.latitude;
                 p.lon = m.location.longitude;
-                p.rsrp = (float)m.lteCells[0].rsrp;
-                p.rsrq = (float)m.lteCells[0].rsrq;
+                p.rsrp = (float)m.registeredLteCell.rsrp;
+                p.rsrq = (float)m.registeredLteCell.rsrq;
                 // Если в DTO нет rssi, можно использовать rsrp как временную заглушку
-                p.rssi = (float)m.lteCells[0].rsrp; // или задать 0
+                p.rssi = (float)m.registeredLteCell.rsrp; // или задать 0
                 p.altitude = (float)m.location.altitude;
-                p.earfcn = m.lteCells[0].earfcn;
-                p.pci = m.lteCells[0].pci;
+                p.earfcn = m.registeredLteCell.earfcn;
+                p.pci = m.registeredLteCell.pci;
                 p.isCurrent = true;
                 currentPoints.push_back(p);
             }
@@ -197,7 +261,7 @@ void GuiManager::renderMapWindow() {
             m_mapManager.renderMap((int)winSize.x, (int)winSize.y,
                                    mapCenterLat, mapCenterLon, mapZoom,
                                    currentPoints, aggregatedPoints,
-                                   showHeatmap, radiusPixels, idwRadius, heatmapCriterion, selectedEarfcn);
+                                   showHeatmap, idwRadius, heatmapCriterion, selectedEarfcn);
         }
         ImGui::End();
     }

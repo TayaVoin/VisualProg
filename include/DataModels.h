@@ -16,6 +16,7 @@ struct LocationDto {
 };
 
 struct LteCellDto {
+    bool registered = false;
     int band = 0;
     int earfcn = 0;
     int mcc = 0;
@@ -31,8 +32,10 @@ struct LteCellDto {
 };
 
 struct GsmCellDto {
+    bool registered = false;
     int cid = 0;
     int lac = 0;
+    int dbm = -120;
     int mcc = 0;
     int mnc = 0;
     int bsic = 0;
@@ -47,6 +50,11 @@ struct NrCellDto {
     int tac = 0;
     int mcc = 0;
     int mnc = 0;
+    bool registered = false;
+    int pci = 0;
+    int arfcn = 0;
+    float rsrp = -140.0f;
+    float rsrq = -20.0f;
     int ssRsrp = -140;
     int ssRsrq = -20;
     int ssSinr = 0;
@@ -66,6 +74,8 @@ struct Measurement {
     TrafficDto traffic;
     std::string deviceId = "unknown";
     int64_t receivedTime = 0;          // время получения сервером (ms)
+    LteCellDto registeredLteCell;  // зарегистрированная LTE сота
+    bool hasRegisteredLte = false;
 };
 
 // -------- Точка для отображения на карте и для IDW --------
@@ -91,6 +101,12 @@ struct AggregatedPoint {
     float altitude = 0.0f;
     int earfcn = 0;
     int count = 0;
+};
+
+struct PciHistory {
+    std::vector<long long> timestamps;   // общая временная шкала
+    std::vector<float> rsrpValues;       // RSRP для данного PCI
+    std::vector<float> rsrqValues;       // RSRQ для данного PCI (добавить)
 };
 
 #endif

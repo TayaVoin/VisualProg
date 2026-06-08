@@ -21,6 +21,155 @@ namespace fs = std::filesystem;
 #define PI 3.14159265358979323846
 #define DEG_TO_RAD (PI/180.0)
 
+// Линейная интерполяция между двумя цветами
+inline Color gradientColor(const Color& c1, const Color& c2, double t) {
+    return {
+        static_cast<uint8_t>(c1.r + (c2.r - c1.r) * t),
+        static_cast<uint8_t>(c1.g + (c2.g - c1.g) * t),
+        static_cast<uint8_t>(c1.b + (c2.b - c1.b) * t)
+    };
+}
+
+// Определения статических цветовых констант
+const Color MapManager::COLOR_EXCELLENT = {255, 0, 0};    // > -80
+const Color MapManager::COLOR_GOOD      = {255, 165, 0};  // -85…-80
+const Color MapManager::COLOR_FAIR      = {255, 255, 0};  // -90…-85
+const Color MapManager::COLOR_POOR      = {0, 255, 0};    // -95…-90
+const Color MapManager::COLOR_NOSIGNAL  = {0, 0, 128};    // < -105
+
+// Реализация getColorForRsrp (плавный градиент)
+void MapManager::getColorForRsrp(float rsrp, uint8_t& r, uint8_t& g, uint8_t& b) {
+    if (rsrp > -80) {
+        r = COLOR_EXCELLENT.r; g = COLOR_EXCELLENT.g; b = COLOR_EXCELLENT.b;
+    }
+    else if (rsrp > -85) {
+        float ratio = (rsrp + 85) / 5.0f;  // -85→0, -80→1
+        Color c = gradientColor(COLOR_GOOD, COLOR_EXCELLENT, ratio);
+        r = c.r; g = c.g; b = c.b;
+    }
+    else if (rsrp > -90) {
+        float ratio = (rsrp + 90) / 5.0f;  // -90→0, -85→1
+        Color c = gradientColor(COLOR_FAIR, COLOR_GOOD, ratio);
+        r = c.r; g = c.g; b = c.b;
+    }
+    else if (rsrp > -95) {
+        float ratio = (rsrp + 95) / 5.0f;  // -95→0, -90→1
+        Color c = gradientColor(COLOR_POOR, COLOR_FAIR, ratio);
+        r = c.r; g = c.g; b = c.b;
+    }
+    else if (rsrp > -105) {
+        float ratio = (rsrp + 105) / 10.0f; // -105→0, -95→1
+        Color c = gradientColor(COLOR_NOSIGNAL, COLOR_POOR, ratio);
+        r = c.r; g = c.g; b = c.b;
+    }
+    else {
+        r = COLOR_NOSIGNAL.r; g = COLOR_NOSIGNAL.g; b = COLOR_NOSIGNAL.b;
+    }
+}
+
+// Плавный 5-цветный градиент для RSRQ (дБ)
+void MapManager::getColorForRsrq(float rsrq, uint8_t& r, uint8_t& g, uint8_t& b) {
+    // Хорошие значения RSRQ: от -3 дБ (лучше) до -20 дБ (хуже)
+    // > -5   -> отлично (зелёный)
+    // -10..-5 -> хорошо (жёлтый)
+    // -15..-10 -> удовлетворительно (оранжевый)
+    // -20..-15 -> плохо (красный)
+    // < -20 -> очень плохо (тёмно-синий)
+    if (rsrq > -5) {
+        r = 0; g = 255; b = 0;      // зелёный
+    }
+    else if (rsrq > -10) {
+        float ratio = (rsrq + 10) / 5.0f; // -10→0, -5→1
+        Color c = gradientColor({255, 255, 0}, {0, 255, 0}, ratio); // жёлтый → зелёный
+        r = c.r; g = c.g; b = c.b;
+    }
+    else if (rsrq > -15) {
+        float ratio = (rsrq + 15) / 5.0f; // -15→0, -10→1
+        Color c = gradientColor({255, 165, 0}, {255, 255, 0}, ratio); // оранжевый → жёлтый
+        r = c.r; g = c.g; b = c.b;
+    }
+    else if (rsrq > -20) {
+        float ratio = (rsrq + 20) / 5.0f; // -20→0, -15→1
+        Color c = gradientColor({255, 0, 0}, {255, 165, 0}, ratio); // красный → оранжевый
+        r = c.r; g = c.g; b = c.b;
+    }
+    else {
+        r = 0; g = 0; b = 128; // тёмно-синий
+    }
+}
+
+// Плавный 5-цветный градиент для RSSI (дБм)
+void MapManager::getColorForRssi(float rssi, uint8_t& r, uint8_t& g, uint8_t& b) {
+    // Диапазон RSSI: от -30 (отлично) до -120 (очень плохо)
+    // > -60 -> отлично (зелёный)
+    // -70..-60 -> хорошо (жёлтый)
+    // -80..-70 -> удовлетворительно (оранжевый)
+    // -90..-80 -> плохо (красный)
+    // < -90 -> очень плохо (тёмно-синий)
+    if (rssi > -60) {
+        r = 0; g = 255; b = 0;
+    }
+    else if (rssi > -70) {
+        float ratio = (rssi + 70) / 10.0f;
+        Color c = gradientColor({255, 255, 0}, {0, 255, 0}, ratio);
+        r = c.r; g = c.g; b = c.b;
+    }
+    else if (rssi > -80) {
+        float ratio = (rssi + 80) / 10.0f;
+        Color c = gradientColor({255, 165, 0}, {255, 255, 0}, ratio);
+        r = c.r; g = c.g; b = c.b;
+    }
+    else if (rssi > -90) {
+        float ratio = (rssi + 90) / 10.0f;
+        Color c = gradientColor({255, 0, 0}, {255, 165, 0}, ratio);
+        r = c.r; g = c.g; b = c.b;
+    }
+    else {
+        r = 0; g = 0; b = 128;
+    }
+}
+
+// Плавный 5-цветный градиент для Altitude (метры)
+// (чем выше, тем хуже – красный)
+void MapManager::getColorForAltitude(float alt, uint8_t& r, uint8_t& g, uint8_t& b) {
+    // 0-100  -> зелёный (хорошо)
+    // 100-200 -> жёлтый
+    // 200-300 -> оранжевый
+    // 300-400 -> красный
+    // >400   -> тёмно-синий
+    if (alt < 100) {
+        r = 0; g = 255; b = 0;
+    }
+    else if (alt < 200) {
+        float ratio = (alt - 100) / 100.0f;
+        Color c = gradientColor({255, 255, 0}, {0, 255, 0}, ratio);
+        r = c.r; g = c.g; b = c.b;
+    }
+    else if (alt < 300) {
+        float ratio = (alt - 200) / 100.0f;
+        Color c = gradientColor({255, 165, 0}, {255, 255, 0}, ratio);
+        r = c.r; g = c.g; b = c.b;
+    }
+    else if (alt < 400) {
+        float ratio = (alt - 300) / 100.0f;
+        Color c = gradientColor({255, 0, 0}, {255, 165, 0}, ratio);
+        r = c.r; g = c.g; b = c.b;
+    }
+    else {
+        r = 0; g = 0; b = 128;
+    }
+}
+
+// Конвертация дБм в милливатты (линейная шкала)
+inline double dbmToMw(double dbm) {
+    return pow(10.0, dbm / 10.0);
+}
+// Конвертация милливатт в дБм
+inline double mwToDbm(double mw) {
+    if (mw <= 0.0) return -140.0;
+    return 10.0 * log10(mw);
+}
+
 // ----------------------------------------------------------------------------
 // Конструктор / деструктор
 // ----------------------------------------------------------------------------
@@ -203,22 +352,56 @@ double MapManager::tileYToLat(double ty, int z) {
 }
 
 // ----------------------------------------------------------------------------
-// Преобразование метров в пиксели (для тепловой карты)
-// ----------------------------------------------------------------------------
-double MapManager::metersToPixels(double meters, double centerLat, int zoom, int winH) {
-    double metersPerPixel = 156543.03392 * std::cos(centerLat * DEG_TO_RAD) / (1 << zoom);
-    return meters / metersPerPixel;
-}
-
-// ----------------------------------------------------------------------------
 // Преобразование значения RSRP в цвет
 // ----------------------------------------------------------------------------
-void MapManager::getColorForValue(float value, uint8_t& r, uint8_t& g, uint8_t& b) {
-    if (value > -80)      { r=255; g=0;   b=0;   }
-    else if (value > -90) { r=255; g=165; b=0;   }
-    else if (value > -100){ r=255; g=255; b=0;   }
-    else if (value > -110){ r=0;   g=255; b=0;   }
-    else                  { r=0;   g=0;   b=128; }
+// Функция градиента
+void MapManager::valueToGradientColor(float value, float minVal, float maxVal,
+                                       uint8_t& r, uint8_t& g, uint8_t& b) {
+    // Ограничиваем значение диапазоном
+    float t = (value - minVal) / (maxVal - minVal);
+    t = std::max(0.0f, std::min(1.0f, t));  // Прижимаем к [0,1]
+    
+    // Цвета градиента: от красного (плохо) -> жёлтый -> зелёный (хорошо)
+    // Три опорных точки: red (t=0), yellow (t=0.5), green (t=1)
+    if (t < 0.5f) {
+        // Красный -> жёлтый
+        float t2 = t / 0.5f;  // от 0 до 1
+        r = 255;
+        g = (uint8_t)(255 * t2);
+        b = 0;
+    } else {
+        // Жёлтый -> зелёный
+        float t2 = (t - 0.5f) / 0.5f;
+        r = (uint8_t)(255 * (1.0f - t2));
+        g = 255;
+        b = 0;
+    }
+}
+
+// Диапазоны
+void MapManager::getRangeForCriterion(int criterion, float& minVal, float& maxVal) {
+    switch (criterion) {
+        case 0: // RSRP (dBm)
+            minVal = -130.0f;
+            maxVal = -50.0f;
+            break;
+        case 1: // RSRQ (dB)
+            minVal = -20.0f;
+            maxVal = -3.0f;
+            break;
+        case 2: // RSSI (dBm)
+            minVal = -120.0f;
+            maxVal = -30.0f;
+            break;
+        case 3: // Altitude (метры)
+            minVal = 0.0f;
+            maxVal = 500.0f;  // подберите под свои данные
+            break;
+        default:
+            minVal = -130.0f;
+            maxVal = -50.0f;
+            break;
+    }
 }
 
 double MapManager::haversineDistance(double lat1, double lon1, double lat2, double lon2) const {
@@ -229,115 +412,13 @@ double MapManager::haversineDistance(double lat1, double lon1, double lat2, doub
 }
 
 // ----------------------------------------------------------------------------
-// Синхронное создание текстуры тепловой карты (круги)
-// ----------------------------------------------------------------------------
-void MapManager::generateHeatmapTexture(const std::vector<MapPoint>& points,
-                                        double centerLat, double centerLon, int zoom,
-                                        int winW, int winH,
-                                        float radiusPixels, float radiusMeters,
-                                        int criterion) {
-    // Создаём пустую текстуру (прозрачный фон)
-    std::vector<uint8_t> pixels(winW * winH * 4, 0);
-
-    double lonMin = centerLon - 180.0 / (1 << zoom);
-    double lonMax = centerLon + 180.0 / (1 << zoom);
-    double latMin = centerLat - 90.0 / (1 << zoom);
-    double latMax = centerLat + 90.0 / (1 << zoom);
-
-    // Фильтруем точки, попадающие в расширенную область (с запасом radiusMeters)
-    double marginLat = radiusMeters / 111319.0; // 1 градус ~111 км
-    double marginLon = marginLat / std::cos(centerLat * DEG_TO_RAD);
-    double latMinExt = latMin - marginLat;
-    double latMaxExt = latMax + marginLat;
-    double lonMinExt = lonMin - marginLon;
-    double lonMaxExt = lonMax + marginLon;
-    std::vector<MapPoint> relevantPoints;
-    for (const auto& p : points) {
-        if (p.lat >= latMinExt && p.lat <= latMaxExt && p.lon >= lonMinExt && p.lon <= lonMaxExt) {
-            relevantPoints.push_back(p);
-        }
-    }
-    if (relevantPoints.empty()) {
-        // Пустая текстура
-        if (m_heatmapTexture != 0) glDeleteTextures(1, &m_heatmapTexture);
-        glGenTextures(1, &m_heatmapTexture);
-        glBindTexture(GL_TEXTURE_2D, m_heatmapTexture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, winW, winH, 0,
-                     GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
-        return;
-    }
-
-    // IDW для каждого пикселя
-    for (int y = 0; y < winH; ++y) {
-        double lat = latMax - (double)y / winH * (latMax - latMin);
-        for (int x = 0; x < winW; ++x) {
-            double lon = lonMin + (double)x / winW * (lonMax - lonMin);
-            double sumW = 0.0, sumWV = 0.0;
-            for (const auto& p : relevantPoints) {
-                double d = haversineDistance(lat, lon, p.lat, p.lon);
-                if (d > radiusMeters) continue;
-
-                // Выбираем значение в зависимости от критерия
-                float val;
-                switch (criterion) {
-                    case 0: val = p.rsrp; break;    // RSRP
-                    case 1: val = p.rsrq; break;    // RSRQ
-                    case 2: val = p.rssi; break;    // RSSI
-                    case 3: val = p.altitude; break; // Altitude
-                    default: val = p.rsrp; break;
-                }
-
-                if (d < 1e-3) {
-                    sumW = 1.0; sumWV = val; break;
-                }
-                double w = 1.0 / (d * d);
-                sumW += w;
-                sumWV += w * val;
-            }
-            float value = (sumW > 0) ? (float)(sumWV / sumW) : -140.0f;
-            uint8_t r, g, b;
-            getColorForValue(value, r, g, b);
-            int idx = (y * winW + x) * 4;
-            pixels[idx+0] = r;
-            pixels[idx+1] = g;
-            pixels[idx+2] = b;
-            pixels[idx+3] = 200;
-        }
-    }
-
-    // Удаляем старую текстуру
-    if (m_heatmapTexture != 0) {
-        glDeleteTextures(1, &m_heatmapTexture);
-        m_heatmapTexture = 0;
-    }
-    // Создаём новую текстуру
-    glGenTextures(1, &m_heatmapTexture);
-    glBindTexture(GL_TEXTURE_2D, m_heatmapTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, winW, winH, 0,
-                 GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
-    m_heatmapTexW = winW;
-    m_heatmapTexH = winH;
-
-    // Сохраняем в PNG в отдельную папку
-    std::string dir = "heatmap_cache";
-    fs::create_directories(dir);
-    std::string path = dir + "/heatmap_zoom_" + std::to_string(zoom) + ".png";
-    stbi_write_png(path.c_str(), winW, winH, 4, pixels.data(), winW*4);
-    std::cout << "Saving heatmap to " << path << std::endl;
-}
-
-// ----------------------------------------------------------------------------
 // Основная отрисовка карты (тайлы, тепловая карта, точки)
 // ----------------------------------------------------------------------------
 void MapManager::renderMap(int winW, int winH,
                            double centerLat, double centerLon, int zoom,
                            const std::vector<MapPoint>& currentPoints,
                            const std::vector<MapPoint>& aggregatedPoints,
-                           bool showHeatmap, float heatmapRadiusPixels, float heatmapRadiusMeters,
+                           bool showHeatmap, float heatmapRadiusMeters,
                            int criterion, int earfcnFilter) {
     const double lonMin = centerLon - 180.0 / (1 << zoom);
     const double lonMax = centerLon + 180.0 / (1 << zoom);
@@ -530,10 +611,9 @@ std::vector<uint8_t> MapManager::computeHeatmapPixels(const std::vector<MapPoint
         }
     }
     if (relevantPoints.empty()) {
-        return pixels;  // пустая текстура
+        return pixels;
     }
 
-    // IDW для каждого пикселя
     for (int y = 0; y < winH; ++y) {
         double lat = latMax - (double)y / winH * (latMax - latMin);
         for (int x = 0; x < winW; ++x) {
@@ -543,13 +623,12 @@ std::vector<uint8_t> MapManager::computeHeatmapPixels(const std::vector<MapPoint
                 double d = haversineDistance(lat, lon, p.lat, p.lon);
                 if (d > radiusMeters) continue;
 
-                // Выбор значения в зависимости от критерия
-                float val;
+                double val;
                 switch (criterion) {
-                    case 0: val = p.rsrp; break;      // RSRP
-                    case 1: val = p.rsrq; break;      // RSRQ
-                    case 2: val = p.rssi; break;      // RSSI
-                    case 3: val = p.altitude; break;  // Altitude
+                    case 0: val = p.rsrp; break;
+                    case 1: val = p.rsrq; break;
+                    case 2: val = p.rssi; break;
+                    case 3: val = p.altitude; break;
                     default: val = p.rsrp; break;
                 }
 
@@ -562,7 +641,19 @@ std::vector<uint8_t> MapManager::computeHeatmapPixels(const std::vector<MapPoint
             }
             float value = (sumW > 0) ? (float)(sumWV / sumW) : -140.0f;
             uint8_t r, g, b;
-            getColorForValue(value, r, g, b);
+            if (criterion == 0) {
+                getColorForRsrp(value, r, g, b);
+            } else if (criterion == 1) {
+                getColorForRsrq(value, r, g, b);
+            } else if (criterion == 2) {
+                getColorForRssi(value, r, g, b);
+            } else if (criterion == 3) {
+                getColorForAltitude(value, r, g, b);
+            } else {
+                float minVal, maxVal;
+                getRangeForCriterion(criterion, minVal, maxVal);
+                valueToGradientColor(value, minVal, maxVal, r, g, b);
+            }
             int idx = (y * winW + x) * 4;
             pixels[idx+0] = r;
             pixels[idx+1] = g;
