@@ -1,0 +1,5 @@
+/mnt/c/dev/pupupu/build/CMakeFiles/imgui.dir
+/mnt/c/dev/pupupu/build/CMakeFiles/implot.dir
+/mnt/c/dev/pupupu/build/CMakeFiles/server.dir
+/mnt/c/dev/pupupu/build/CMakeFiles/edit_cache.dir
+/mnt/c/dev/pupupu/build/CMakeFiles/rebuild_cache.dir

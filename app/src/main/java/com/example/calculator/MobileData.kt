@@ -20,7 +20,9 @@ data class CellInfoLteDto(
     val rsrq: Int?,
     val rssnr: Int?,
     val cqi: Int?,
-    val timingAdvance: Int?
+    val timingAdvance: Int?,
+    val rssi: Int? = null,
+    val registered: Boolean? = null
 )
 
 data class CellInfoGsmDto(

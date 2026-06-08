@@ -219,7 +219,9 @@ class MobileDataActivity : AppCompatActivity() {
                                 rsrq = ss.rsrq,
                                 rssnr = ss.rssnr,
                                 cqi = ss.cqi,
-                                timingAdvance = ss.timingAdvance
+                                timingAdvance = ss.timingAdvance,
+                                rssi = ss.rssi,
+                                registered = info.isRegistered
                             )
                         )
                     }
